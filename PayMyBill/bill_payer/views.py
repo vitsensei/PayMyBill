@@ -5,9 +5,10 @@ def index(request):
     return HttpResponse("Page to sign in/sign up.")
 
 
-def payments(request):
-    return HttpResponse("Page to mange all the payments")
+def payments(request, company_name):
+    return HttpResponse(f"Page to mange all the payments of company {company_name}")
 
 
-def details(request):
-    return HttpResponse("Details of one payment")
+def details(request, company_name, payment_id):
+    return HttpResponse(f"Details of one payment with id {payment_id} of company {company_name}")
+
