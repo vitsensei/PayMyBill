@@ -4,11 +4,11 @@ A payment platform which would allow companies to process payments without direc
 # Main requirement
 :black_square_button: Payment must contain the following information: status (created, successful, failed, disputed), the time of the creation and the time of the transaction, the company that initiated the transaction
 
-:black_square_button: Company must contain the following information: name, email, password, payment details (bsb and account), sign up date
+:ballot_box_with_check: Company must contain the following information: name, email, password, payment details (bsb and account), sign up date
 
 :black_square_button: Django admin must be available to be able to view and modify payments and companies
 
-:black_square_button: Company must be able to sign up to the platform via a form
+:ballot_box_with_check: Company must be able to sign up to the platform via a form
 
 :black_square_button: Company must be able to interact with payments via API: create, delete, process payments
 
