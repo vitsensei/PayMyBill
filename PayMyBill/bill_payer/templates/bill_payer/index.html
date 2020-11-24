@@ -1,0 +1,24 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <title>PayMyBill</title>
+      <link
+              href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+              rel="stylesheet">
+      {% load static %}
+      <link rel="stylesheet" type="text/css" href="{% static 'bill_payer/styles.css' %}">
+  </head>
+  <body>
+      {% include navbar %}
+      <div class="container-fluid">
+          <div class="container-fluid">
+              {% include yield %}
+          </div>
+      </div>
+      <!-- jquery & Bootstrap JS -->
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+      </script>
+      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
+      </script>
+  </body>
+  </html>

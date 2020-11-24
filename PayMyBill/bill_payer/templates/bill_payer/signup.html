@@ -1,0 +1,31 @@
+<form action="/signup/" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>Email address</label>
+        <input type="email" name="email" class="form-control" id="email" placeholder="Email">
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+    </div>
+
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Company name">
+    </div>
+
+    <div class="form-group">
+        <label>BSB</label>
+        <input type="number" name="bsb" class="form-control" placeholder="BSB number">
+    </div>
+
+    <div class="form-group">
+        <label>Account number</label>
+        <input type="number" name="account_num" class="form-control" placeholder="Account number">
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Sign up
+    </button>
+</form>
