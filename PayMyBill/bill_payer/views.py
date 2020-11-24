@@ -8,28 +8,33 @@ from django.utils import timezone
 
 def index(request):
     return render(request, r"bill_payer/index.html", {"navbar": loader.get_template(r"bill_payer/navbar.html"),
-                                                      "yield": loader.get_template(r"bill_payer/signup.html")})
+                                                      "yield": loader.get_template(r"bill_payer/home.html")})
 
 
 def signup(request):
-    try:
-        name = request.POST["name"]
-        email = request.POST["email"]
-        password = request.POST["password"]
-        bsb = request.POST["bsb"]
-        account_num = request.POST["account_num"]
+    if request.method == "POST":
+        try:
+            name = request.POST["name"]
+            email = request.POST["email"]
+            password = request.POST["password"]
+            bsb = request.POST["bsb"]
+            account_num = request.POST["account_num"]
 
-        company = Company(name=name,
-                          email=email,
-                          password=password,
-                          bsb=int(bsb),
-                          account_num=int(account_num),
-                          signup_date=timezone.now())
+            company = Company(name=name,
+                              email=email,
+                              password=password,
+                              bsb=int(bsb),
+                              account_num=int(account_num),
+                              signup_date=timezone.now())
 
-        return HttpResponseRedirect(reverse('bill_payer:payments', args=(company.name,)))
+            return HttpResponseRedirect(reverse('bill_payer:payments', args=(company.name,)))
 
-    except:
-        return HttpResponseNotFound('<h1>Page not found</h1>')
+        except:
+            return HttpResponseNotFound("Fail to register new company.")
+
+    else:
+        return render(request, r"bill_payer/index.html", {"navbar": loader.get_template(r"bill_payer/navbar.html"),
+                                                          "yield": loader.get_template(r"bill_payer/signup.html")})
 
 
 def payments(request, company_name):
