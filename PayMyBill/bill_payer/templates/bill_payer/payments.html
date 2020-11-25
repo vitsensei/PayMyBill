@@ -1,14 +1,18 @@
-<div class="card-deck mb-3 text-center">
-  <div class="card mb-4 shadow-sm">
-    <div class="card-header">
-      <h4 class="my-0 font-weight-normal">[To some company...]</h4>
+{% if list_of_payments %}
+  {% for payment in list_of_payments %}
+    <div class="card-deck mb-3 text-center">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+          <h4 class="my-0 font-weight-normal">{{payment.name}}</h4>
+        </div>
+        <div class="card-body">
+          <h1 class="card-title pricing-card-title">${{payment.amount}}</h1>
+          <ul class="list-unstyled mt-3 mb-4">
+            <li>BSB: {{payment.bsb}}</li>
+            <li>Created on: {{payment.create_date}}</li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="card-body">
-      <h1 class="card-title pricing-card-title">$0</h1>
-      <ul class="list-unstyled mt-3 mb-4">
-        <li>BSB: </li>
-        <li>Created on: </li>
-      </ul>
-    </div>
-  </div>
-</div>
+  {% endfor %}
+{% endif %}
