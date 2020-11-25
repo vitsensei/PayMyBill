@@ -22,10 +22,9 @@ class Payment(models.Model):
 
     name = models.CharField(max_length=200)
     bsb = models.CharField(max_length=200)
-    account = models.CharField(max_length=200)
+    account_num = models.CharField(max_length=200)
 
     create_date = models.DateTimeField('publish date')
-    pay_date = models.DateTimeField('pay date')
 
     status = models.IntegerField(default=0)
 
