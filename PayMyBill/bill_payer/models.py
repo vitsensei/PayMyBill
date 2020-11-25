@@ -25,7 +25,6 @@ class Payment(models.Model):
     account = models.CharField(max_length=200)
 
     create_date = models.DateTimeField('publish date')
-    pay_date = models.DateTimeField('pay date')
 
     status = models.IntegerField(default=0)
 
