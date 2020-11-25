@@ -2,7 +2,7 @@
 A payment platform which would allow companies to process payments without direct interaction with banks.
 
 # Main requirement
-:black_square_button: Payment must contain the following information: status (created, successful, failed, disputed), the time of the creation and the time of the transaction, the company that initiated the transaction
+:ballot_box_with_check: Payment must contain the following information: status (created, successful, failed, disputed), the time of the creation and the time of the transaction, the company that initiated the transaction
 
 :ballot_box_with_check: Company must contain the following information: name, email, password, payment details (bsb and account), sign up date
 
