@@ -45,12 +45,9 @@ def signin(request):
         company = Company.objects.get(email=email,
                                       password=password)
 
-        if len(company) == 0:
-            return HttpResponseNotFound("Fail to login.")
-
         return HttpResponseRedirect(reverse('bill_payer:payments', args=(company.name,)))
 
-    except:
+    except Company.DoesNotExist:
         return HttpResponseNotFound("Fail to login.")
 
 

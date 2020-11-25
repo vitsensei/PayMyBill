@@ -7,5 +7,6 @@ urlpatterns = [
     path('home/<str:company_name>', views.payments, name="payments"),
     path('home/<str:company_name>/<int:payment_id>', views.details, name="payment_details"),
     path('signup/', views.signup, name="signup"),
+    path('signin/', views.signin, name="signin")
 ]
 
