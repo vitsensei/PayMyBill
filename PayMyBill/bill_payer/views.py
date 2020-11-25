@@ -62,7 +62,7 @@ def payments(request, company_name):
         raise Http404(f"Company {company_name} does not exist.")
 
     else:
-        return HttpResponse(reverse("bill_payer:index"))
+        return render(request, "bill_payer/payments.html", {"list_of_payments": company.payment_set.all})
 
 
 def details(request, company_name, payment_id):
