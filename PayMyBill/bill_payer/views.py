@@ -65,8 +65,6 @@ def payments(request, company_name):
                                                           "yield": yield_template,
                                                           "list_of_payments": company.payment_set.all()})
 
-        # return render(request, yield_template)
-
 
 def details(request, company_name, payment_id):
     try:
