@@ -37,6 +37,20 @@ def signup(request):
                                                           "yield": loader.get_template(r"bill_payer/signup.html")})
 
 
+def signin(request):
+    try:
+        email = request.POST["email"]
+        password = request.POST["password"]
+
+        company = Company.objects.get(email=email,
+                                      password=password)
+
+        return HttpResponseRedirect(reverse('bill_payer:payments', args=(company.name,)))
+
+    except Company.DoesNotExist:
+        return HttpResponseNotFound("Fail to login.")
+
+
 def payments(request, company_name):
     try:
         company = Company.objects.get(name=company_name)
@@ -45,7 +59,7 @@ def payments(request, company_name):
         raise Http404(f"Company {company_name} does not exist.")
 
     else:
-        return HttpResponse(reverse("bill_payer:index"))
+        return render(request, "bill_payer/payments.html", {"list_of_payments": company.payment_set.all})
 
 
 def details(request, company_name, payment_id):
