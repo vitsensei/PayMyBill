@@ -1,6 +1,6 @@
 from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseNotFound
 from .models import Company, Payment
-from django.template import loader
+from django.template import loader, Context, Template
 from django.urls import reverse
 from django.shortcuts import render
 from django.utils import timezone
@@ -59,7 +59,13 @@ def payments(request, company_name):
         raise Http404(f"Company {company_name} does not exist.")
 
     else:
-        return render(request, "bill_payer/payments.html", {"list_of_payments": company.payment_set.all})
+        yield_template = loader.get_template('bill_payer/payments.html')
+
+        return render(request, r"bill_payer/index.html", {"navbar": loader.get_template(r"bill_payer/navbar.html"),
+                                                          "yield": yield_template,
+                                                          "list_of_payments": company.payment_set.all()})
+
+        # return render(request, yield_template)
 
 
 def details(request, company_name, payment_id):
