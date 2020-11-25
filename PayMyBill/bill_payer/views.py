@@ -37,6 +37,23 @@ def signup(request):
                                                           "yield": loader.get_template(r"bill_payer/signup.html")})
 
 
+def signin(request):
+    try:
+        email = request.POST["email"]
+        password = request.POST["password"]
+
+        company = Company.objects.get(email=email,
+                                      password=password)
+
+        if len(company) == 0:
+            return HttpResponseNotFound("Fail to login.")
+
+        return HttpResponseRedirect(reverse('bill_payer:payments', args=(company.name,)))
+
+    except:
+        return HttpResponseNotFound("Fail to login.")
+
+
 def payments(request, company_name):
     try:
         company = Company.objects.get(name=company_name)
