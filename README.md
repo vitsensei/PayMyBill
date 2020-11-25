@@ -6,7 +6,7 @@ A payment platform which would allow companies to process payments without direc
 
 :ballot_box_with_check: Company must contain the following information: name, email, password, payment details (bsb and account), sign up date
 
-:black_square_button: Django admin must be available to be able to view and modify payments and companies
+:ballot_box_with_check: Django admin must be available to be able to view and modify payments and companies
 
 :ballot_box_with_check: Company must be able to sign up to the platform via a form
 
