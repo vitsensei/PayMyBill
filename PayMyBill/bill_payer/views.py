@@ -1,9 +1,15 @@
 from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseNotFound
-from .models import Company, Payment
 from django.template import loader, Context, Template
 from django.urls import reverse
 from django.shortcuts import render
 from django.utils import timezone
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import status
+
+from .serializer import PaymentSerializer, CompanySerializer
+from .models import Company, Payment
 
 
 def index(request):
@@ -82,4 +88,113 @@ def details(request, company_name, payment_id):
 
         else:
             return HttpResponse(f"Details of one payment with id {payment_id} of company {company_name}")
+
+
+class CompanyDetail(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, format=None):
+        if request.auth is None:
+            response = HttpResponse
+            response.status_code = 401
+
+            return response()
+
+        else:
+            try:
+                c = request.user.company
+                serializer = CompanySerializer(c)
+
+                return Response(serializer.data)
+
+            except Company.DoesNotExist:
+                response = HttpResponse
+                response.status_code = 404
+
+                return response()
+
+
+class PaymentList(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request):
+        try:
+            c = request.user.company
+
+            payments = c.payment.all()
+            serializer = PaymentSerializer(payments, many=True)
+
+            return Response(serializer.data)
+
+        except Company.DoesNotExist:
+            response = HttpResponse
+            response.status_code = 404
+
+            return response()
+
+    def post(self, request):
+        serializer = PaymentSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PaymentDetail(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, pk, format=None):
+        try:
+            c = request.user.company
+
+            payment = c.payment.get(pk=pk)
+            serializer = PaymentSerializer(payment)
+
+            return Response(serializer.data)
+
+        except Company.DoesNotExist:
+            response = HttpResponse
+            response.status_code = 404
+
+            return response()
+
+        except Payment.DoesNotExist:
+            response = HttpResponse
+            response.status_code = 404
+
+            return response()
+
+    def post(self, request, pk, format=None):
+        try:
+            c = request.user.company
+
+            payment = c.payment.get(pk=pk)
+            serializer = PaymentSerializer(payment, data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+
+        except Company.DoesNotExist:
+            error = {"Not found": {"The requested company is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
+
+        except Payment.DoesNotExist:
+            error = {"Not found": {"The requested payment is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk, format=None):
+        try:
+            c = request.user.company
+
+            payment = c.payment.get(pk=pk)
+            payment.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except Company.DoesNotExist:
+            response = HttpResponse
+            response.status_code = 404
+
+            return response()
 
