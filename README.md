@@ -10,12 +10,14 @@ A payment platform which would allow companies to process payments without direc
 
 :ballot_box_with_check: Company must be able to sign up to the platform via a form
 
-:black_square_button: Company must be able to interact with payments via API: create, delete, process payments
+:ballot_box_with_check: Company must be able to interact with payments via API: create, delete, process payments
 
 :black_square_button: Company must be able to subscribe via API to receive payment updates. This could include changes made manually in the admin portal, backend during normal course of operation, or received an event from a bank (e.g. disputed transaction)
 
+:black_square_button: Create an automate test scripts
+
 # Additional technical requirement
-:black_square_button: Security: a company must be able to access payments only created by itself and a company must be authorized during subscription
+:ballot_box_with_check: Security: a company must be able to access payments only created by itself and a company must be authorized during subscription
 
 :black_square_button: Scale: one single company could potentially send a lot of requests and block everyone else, we would like the system to be able to handle and avoid it   
 
