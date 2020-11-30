@@ -118,6 +118,32 @@ class Payment(models.Model):
     """
     status = models.IntegerField(default=0)
 
+    initial_state = {
+        "company": company,
+        "name": name,
+        "bsb": bsb,
+        "account_num": account_num,
+        "amount": amount,
+        "created_date": created_date,
+        "paid_date": paid_date
+    }
+
     def __str__(self):
         return f"{self.company.name} to {self.name} (${self.amount})"
+
+
+class Hook(models.Model):
+    # The web hook models allow each company to have multiple hook
+    company = models.ForeignKey(Company, on_delete=models.CASCADE,
+                                default=1, related_name="hook")
+
+    # The URL to make the POST request to
+    url = models.CharField(max_length=200, default="")
+
+    # List of state that the company subscribed to
+    is_subscribed_name = models.BooleanField(default=False)
+    is_subscribed_bsb = models.BooleanField(default=False)
+    is_subscribed_account_num = models.BooleanField(default=False)
+    is_subscribed_amount = models.BooleanField(default=False)
+    is_subscribed_status = models.BooleanField(default=False)
 

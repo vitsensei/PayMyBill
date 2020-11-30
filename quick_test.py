@@ -15,8 +15,18 @@ list_of_company_name = [
     "Boeing"
 ]
 
+list_of_destination = [
+    "https://www.google.com/",
+    "https://www.python.org/",
+    "https://www.djangoproject.com/",
+    "https://www.django-rest-framework.org/",
+    "https://numpy.org/",
+    "https://www.scipy.org/"
+]
+
 company_url = 'http://localhost:8000/bill_payer/resources/company'
 all_payment_url = 'http://localhost:8000/bill_payer/resources/payment'
+all_hook_url = 'http://localhost:8000/bill_payer/resources/hook'
 token_url = 'http://localhost:8000/bill_payer/token'
 
 
@@ -89,6 +99,43 @@ def update_existing_payment(token, payment_id):
     return r.json()
 
 
+def get_all_hook(token):
+    global all_hook_url
+
+    r = requests.get(all_hook_url, headers=create_header(token))
+
+    return r.json()
+
+
+def get_existing_hook(token, hook_id):
+    global all_hook_url
+    single_hook_url = all_hook_url + f"/{hook_id}"
+
+    r = requests.get(single_hook_url, headers=create_header(token))
+    return r.json()
+
+
+def generate_random_hook():
+    global list_of_destination
+
+    url = list_of_destination[randint(0, len(list_of_destination) - 1)]
+    hook = {
+        "url": list_of_destination[randint(0, len(list_of_destination) - 1)],
+        "is_subscribed_name": str(int(randint(0, 100) % 2 == 1)),
+        "is_subscribed_bsb": str(int(randint(0, 100) % 2 == 1)),
+        "is_subscribed_account_num": str(int(randint(0, 100) % 2 == 1)),
+        "is_subscribed_amount": str(int(randint(0, 100) % 2 == 1)),
+        "is_subscribed_status": str(int(randint(0, 100) % 2 == 1))
+    }
+
+    return hook
+
+
+def post_random_hook(token):
+    global all_hook_url
+
+    requests.post(all_hook_url, headers=create_header(token), data=generate_random_hook())
+
 # Get token
 token = get_token("user1@random.com", "pass")
 
@@ -103,6 +150,17 @@ token = get_token("user1@random.com", "pass")
 # Test creating a new payment
 # post_random_payment(token)
 
-# Testing updating an existing payment
-payment = update_existing_payment(token, 3)
-pprint(payment)
+# Test updating an existing payment
+# payment = update_existing_payment(token, 3)
+# pprint(payment)
+
+# Test get all hooks
+# hooks = get_all_hook(token)
+# pprint(hooks)
+
+# Test get a specific hook
+# hook = get_existing_hook(token, hook_id=1)
+# pprint(hook)
+
+# Test post a random hook
+# post_random_hook(token)
