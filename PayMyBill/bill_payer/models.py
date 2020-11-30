@@ -7,6 +7,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import *
 from django.dispatch import receiver
+import requests
 
 
 class CustomUserManager(BaseUserManager):
@@ -143,18 +144,21 @@ class Hook(models.Model):
     # The URL to make the POST request to
     url = models.CharField(max_length=200, default="")
 
-    # List of state that the company subscribed to
-    is_subscribed_name = models.BooleanField(default=False)
-    is_subscribed_bsb = models.BooleanField(default=False)
-    is_subscribed_account_num = models.BooleanField(default=False)
-    is_subscribed_amount = models.BooleanField(default=False)
-    is_subscribed_status = models.BooleanField(default=False)
+
+def post_msg(msg, urls):
+    pprint(msg)
+    for url in urls:
+        # requests.post(url, data=msg)
+        print(f"Sending msg to {url}")
 
 
 @receiver(post_save, sender=Payment)
 def hook_update_handler(sender, **kwargs):
     instance = kwargs["instance"]
     created = kwargs["created"]
+
+    c = instance.company
+    urls = [hook.url for hook in c.hook.all()]
 
     if created:
         new_state = {
@@ -170,7 +174,7 @@ def hook_update_handler(sender, **kwargs):
             "msg": "New payment created"
         }
 
-        pprint(hook_message)
+        post_msg(hook_message, urls)
 
     else:
         new_state = dict()
@@ -190,14 +194,18 @@ def hook_update_handler(sender, **kwargs):
                 "msg": "Payment updated"
             }
 
-            pprint(hook_message)
+            post_msg(hook_message, urls)
 
 
 @receiver(pre_delete, sender=Payment)
 def hook_delete_handler(sender, **kwargs):
     instance = kwargs["instance"]
+
+    c = instance.company
+    urls = [hook.url for hook in c.hook.all()]
+
     hook_message = {
         "msg": f"Payment (id={instance.id}) is deleted."
     }
 
-    pprint(hook_message)
+    post_msg(hook_message, urls)

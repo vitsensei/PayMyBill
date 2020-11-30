@@ -98,7 +98,7 @@ def update_existing_payment(token, payment_id):
     single_payment_url = all_payment_url + f"/{payment_id}"
 
     payment = get_single_payment(token, payment_id)
-    payment["status"] = 2
+    payment["status"] = 0
     r = requests.post(single_payment_url, headers=create_header(token), data=payment)
 
     return r.json()
@@ -166,11 +166,11 @@ token = get_token("user1@random.com", "pass")
 # post_random_payment(token)
 
 # Test updating an existing payment
-# payment = update_existing_payment(token, 3)
+payment = update_existing_payment(token, 3)
 # pprint(payment)
 
 #### DELETE ####
-delete_payment(token, 2)
+# delete_payment(token, 2)
 
 ################ Test Hook ################
 # Test get all hooks
