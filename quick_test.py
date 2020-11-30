@@ -66,10 +66,15 @@ def get_token(id, password):
     return token
 
 
+def get_all(token, address):
+    r = requests.get(address, headers=create_header(token))
+    return r.json()
+
+
 def get_all_payment(token):
     global all_payment_url
 
-    r = requests.get(all_payment_url, headers=create_header(token))
+    r = get_all(token, all_payment_url)
 
     return r.json()
 
@@ -93,16 +98,23 @@ def update_existing_payment(token, payment_id):
     single_payment_url = all_payment_url + f"/{payment_id}"
 
     payment = get_single_payment(token, payment_id)
-    payment["status"] = 1
+    payment["status"] = 2
     r = requests.post(single_payment_url, headers=create_header(token), data=payment)
 
     return r.json()
 
 
+def delete_payment(token, payment_id):
+    global all_payment_url
+    single_payment_url = all_payment_url + f"/{payment_id}"
+
+    requests.delete(single_payment_url, headers=create_header(token))
+
+
 def get_all_hook(token):
     global all_hook_url
 
-    r = requests.get(all_hook_url, headers=create_header(token))
+    r = get_all(token, all_hook_url)
 
     return r.json()
 
@@ -139,6 +151,8 @@ def post_random_hook(token):
 # Get token
 token = get_token("user1@random.com", "pass")
 
+################ Test Payment ################
+#### GET ####
 # Test getting all payments in this account
 # payments = get_all_payment(token)
 # pprint(payments)
@@ -147,6 +161,7 @@ token = get_token("user1@random.com", "pass")
 # payment = get_single_payment(token, 3)
 # pprint(payment)
 
+#### POST ####
 # Test creating a new payment
 # post_random_payment(token)
 
@@ -154,6 +169,10 @@ token = get_token("user1@random.com", "pass")
 # payment = update_existing_payment(token, 3)
 # pprint(payment)
 
+#### DELETE ####
+delete_payment(token, 2)
+
+################ Test Hook ################
 # Test get all hooks
 # hooks = get_all_hook(token)
 # pprint(hooks)
