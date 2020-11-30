@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
 
-from .serializer import PaymentSerializer, CompanySerializer
-from .models import Company, Payment
+from .serializer import PaymentSerializer, CompanySerializer, HookSerializer
+from .models import Company, Payment, Hook
 
 
 def index(request):
@@ -108,10 +108,8 @@ class CompanyDetail(APIView):
                 return Response(serializer.data)
 
             except Company.DoesNotExist:
-                response = HttpResponse
-                response.status_code = 404
-
-                return response()
+                error = {"Not found": {"The requested company is not found."}}
+                return Response(error, status=status.HTTP_404_NOT_FOUND)
 
 
 class PaymentList(APIView):
@@ -127,10 +125,8 @@ class PaymentList(APIView):
             return Response(serializer.data)
 
         except Company.DoesNotExist:
-            response = HttpResponse
-            response.status_code = 404
-
-            return response()
+            error = {"Not found": {"The requested company is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         serializer = PaymentSerializer(data=request.data, context={'request': request})
@@ -154,16 +150,12 @@ class PaymentDetail(APIView):
             return Response(serializer.data)
 
         except Company.DoesNotExist:
-            response = HttpResponse
-            response.status_code = 404
-
-            return response()
+            error = {"Not found": {"The requested company is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
 
         except Payment.DoesNotExist:
-            response = HttpResponse
-            response.status_code = 404
-
-            return response()
+            error = {"Not found": {"The requested payment is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, pk, format=None):
         try:
@@ -193,8 +185,77 @@ class PaymentDetail(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         except Company.DoesNotExist:
+            error = {"Not found": {"The requested company is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
+
+        except Payment.DoesNotExist:
+            error = {"Not found": {"The requested payment is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
+
+
+class HookList(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, format=None):
+        try:
+            c = request.user.company
+
+            hooks = c.hook.all()
+            serializer = HookSerializer(hooks, many=True)
+
+            return Response(serializer.data)
+
+        except Company.DoesNotExist:
             response = HttpResponse
             response.status_code = 404
 
             return response()
+
+    def post(self, request, format=None):
+        serializer = HookSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HookDetail(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, pk, format=None):
+        try:
+            c = request.user.company
+
+            hook = c.hook.get(pk=pk)
+            serializer = HookSerializer(hook)
+
+            return Response(serializer.data)
+
+        except Company.DoesNotExist:
+            error = {"Not found": {"The requested company is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
+
+        except Hook.DoesNotExist:
+            error = {"Not found": {"The requested hook is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, pk, format=None):
+        try:
+            c = request.user.company
+
+            hook = c.hook.get(pk=pk)
+            serializer = HookSerializer(hook, data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+
+        except Company.DoesNotExist:
+            error = {"Not found": {"The requested company is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
+
+        except Hook.DoesNotExist:
+            error = {"Not found": {"The requested hook is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
 

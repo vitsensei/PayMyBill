@@ -82,4 +82,5 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(CustomUser, UserAdmin)
 admin.site.register(Company)
 admin.site.register(Payment)
+admin.site.register(Hook)
 admin.site.unregister(Group)

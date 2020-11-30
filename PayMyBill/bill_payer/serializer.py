@@ -2,7 +2,7 @@ from copy import deepcopy
 from datetime import datetime
 
 from rest_framework import serializers
-from .models import Company, Payment
+from .models import Company, Payment, Hook
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -40,3 +40,30 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ["name", "bsb", "account_num", "signup_date"]
 
+
+class HookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hook
+        fields = ["url", "is_subscribed_name", "is_subscribed_bsb",
+                  "is_subscribed_account_num", "is_subscribed_amount",
+                  "is_subscribed_status"]
+
+    def create(self, validated_data):
+        data = deepcopy(validated_data)  # deepcopy just in case
+        # this instance is used down the line
+        user = self.context['request'].user
+        company = user.company
+
+        data["company_id"] = company.id
+        return Hook.objects.create(**data)
+
+    def update(self, instance, validated_data):
+        instance.url = validated_data.get("url", instance.url)
+        instance.is_subscribed_name = validated_data.get("is_subscribed_name", instance.is_subscribed_name)
+        instance.is_subscribed_bsb = validated_data.get("is_subscribed_bsb", instance.is_subscribed_bsb)
+        instance.is_subscribed_account_num = validated_data.get("is_subscribed_account_num", instance.is_subscribed_account_num)
+        instance.is_subscribed_amount = validated_data.get("is_subscribed_amount", instance.is_subscribed_amount)
+        instance.is_subscribed_status = validated_data.get("is_subscribed_status", instance.is_subscribed_status)
+
+        instance.save()
+        return instance

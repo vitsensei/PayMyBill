@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta
+from pprint import pprint
 
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.signals import *
+from django.dispatch import receiver
+import requests
 
 
 class CustomUserManager(BaseUserManager):
@@ -118,6 +122,90 @@ class Payment(models.Model):
     """
     status = models.IntegerField(default=0)
 
+    def __init__(self, *args, **kwargs):
+        super(Payment, self).__init__(*args, **kwargs)
+        self.initial_state = {
+            "name": self.name,
+            "bsb": self.bsb,
+            "account_num": self.account_num,
+            "amount": self.amount,
+            "status": self.status
+        }
+
     def __str__(self):
         return f"{self.company.name} to {self.name} (${self.amount})"
 
+
+class Hook(models.Model):
+    # The web hook models allow each company to have multiple hook
+    company = models.ForeignKey(Company, on_delete=models.CASCADE,
+                                default=1, related_name="hook")
+
+    # The URL to make the POST request to
+    url = models.CharField(max_length=200, default="")
+
+
+def post_msg(msg, urls):
+    pprint(msg)
+    for url in urls:
+        # requests.post(url, data=msg)
+        print(f"Sending msg to {url}")
+
+
+@receiver(post_save, sender=Payment)
+def hook_update_handler(sender, **kwargs):
+    instance = kwargs["instance"]
+    created = kwargs["created"]
+
+    c = instance.company
+    urls = [hook.url for hook in c.hook.all()]
+
+    if created:
+        new_state = {
+            "name": instance.name,
+            "bsb": instance.bsb,
+            "account_num": instance.account_num,
+            "amount": instance.amount,
+            "status": instance.status
+        }
+
+        hook_message = {
+            "new_state": new_state,
+            "msg": "New payment created"
+        }
+
+        post_msg(hook_message, urls)
+
+    else:
+        new_state = dict()
+        previous_state = dict()
+        msg = "State updated"
+
+        for field_name in instance.initial_state.keys():
+            current_state = getattr(instance, field_name)
+            if current_state != instance.initial_state[field_name]:
+                new_state[field_name] = current_state
+                previous_state[field_name] = instance.initial_state[field_name]
+
+        if len(new_state) > 0:
+            hook_message = {
+                "new_state": new_state,
+                "previous_state": previous_state,
+                "msg": "Payment updated"
+            }
+
+            post_msg(hook_message, urls)
+
+
+@receiver(pre_delete, sender=Payment)
+def hook_delete_handler(sender, **kwargs):
+    instance = kwargs["instance"]
+
+    c = instance.company
+    urls = [hook.url for hook in c.hook.all()]
+
+    hook_message = {
+        "msg": f"Payment (id={instance.id}) is deleted."
+    }
+
+    post_msg(hook_message, urls)

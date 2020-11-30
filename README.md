@@ -12,7 +12,7 @@ A payment platform which would allow companies to process payments without direc
 
 :ballot_box_with_check: Company must be able to interact with payments via API: create, delete, process payments
 
-:black_square_button: Company must be able to subscribe via API to receive payment updates. This could include changes made manually in the admin portal, backend during normal course of operation, or received an event from a bank (e.g. disputed transaction)
+:ballot_box_with_check: Company must be able to subscribe via API to receive payment updates. This could include changes made manually in the admin portal, backend during normal course of operation, or received an event from a bank (e.g. disputed transaction)
 
 :black_square_button: Create an automate test scripts
 
