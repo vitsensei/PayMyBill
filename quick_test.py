@@ -149,7 +149,7 @@ def post_random_hook(token):
     requests.post(all_hook_url, headers=create_header(token), data=generate_random_hook())
 
 # Get token
-token = get_token("user1@random.com", "pass")
+token = get_token("user2@random.com", "pass")
 
 ################ Test Payment ################
 #### GET ####
@@ -166,7 +166,7 @@ token = get_token("user1@random.com", "pass")
 # post_random_payment(token)
 
 # Test updating an existing payment
-payment = update_existing_payment(token, 3)
+# payment = update_existing_payment(token, 3)
 # pprint(payment)
 
 #### DELETE ####

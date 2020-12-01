@@ -4,7 +4,7 @@ from pprint import pprint
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy
 from django.db.models.signals import *
 from django.dispatch import receiver
 import requests
@@ -45,8 +45,8 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser):
     class Meta:
-        verbose_name = _("User")
-        verbose_name_plural = _("Users")
+        verbose_name = gettext_lazy("User")
+        verbose_name_plural = gettext_lazy("Users")
 
     email = models.EmailField(unique=True)
 
@@ -65,18 +65,16 @@ class CustomUser(AbstractBaseUser):
 
     def has_perm(self, perm, obj=None):
         # Not yet implemented
-        print(f"asking for perm: {perm}")
         return True
 
     def has_module_perms(self, package_name):
         # Not yet implemented
-        print(f"asking for module_perms: {package_name}")
         return True
 
 
 class Company(models.Model):
     class Meta:
-        verbose_name_plural = _("Companies")
+        verbose_name_plural = gettext_lazy("Companies")
 
     # The (custom) user model for auth
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="company")
@@ -146,7 +144,6 @@ class Hook(models.Model):
 
 
 def post_msg(msg, urls):
-    pprint(msg)
     for url in urls:
         # requests.post(url, data=msg)
         print(f"Sending msg to {url}")
