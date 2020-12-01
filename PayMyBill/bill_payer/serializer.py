@@ -44,9 +44,7 @@ class CompanySerializer(serializers.ModelSerializer):
 class HookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hook
-        fields = ["url", "is_subscribed_name", "is_subscribed_bsb",
-                  "is_subscribed_account_num", "is_subscribed_amount",
-                  "is_subscribed_status"]
+        fields = ["url"]
 
     def create(self, validated_data):
         data = deepcopy(validated_data)  # deepcopy just in case

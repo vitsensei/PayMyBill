@@ -17,6 +17,14 @@ list_of_company_name = [
     "Boeing"
 ]
 
+list_of_destination = [
+    "https://www.google.com/",
+    "https://www.python.org/",
+    "https://www.djangoproject.com/",
+    "https://www.django-rest-framework.org/",
+    "https://numpy.org/",
+    "https://www.scipy.org/"
+]
 
 
 class PaymentUnitTest(TestCase):
@@ -116,3 +124,58 @@ class PaymentUnitTest(TestCase):
         response.render()
 
         assert response.status_code == 204, f"Actual response: {response.status_code}"
+
+
+class HookUnitTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.user = CustomUser.objects.create_user(email="user2@random.com",
+                                                   password="pass")
+
+        c = Company.objects.create(user=self.user,
+                               name="AML3D",
+                               bsb=987654,
+                               account_num=456789)
+
+        self.all_hook_url = 'http://localhost:8000/bill_payer/resources/hook'
+
+    def test_create_hook(self):
+        global list_of_destination
+
+        url = list_of_destination[randint(0, len(list_of_destination) - 1)]
+        hook = {
+            "url": list_of_destination[randint(0, len(list_of_destination) - 1)]
+        }
+
+        request = self.factory.post(self.all_hook_url, data=hook)
+        force_authenticate(request, user=self.user)
+
+        view = HookList.as_view()
+        response = view(request)
+        response.render()
+
+        assert response.status_code == 201, f"Actual response: {response.status_code}"
+
+    def test_get_all_hook(self):
+        self.test_create_hook()
+        self.test_create_hook()
+        self.test_create_hook()
+
+        request = self.factory.get(self.all_hook_url)
+        force_authenticate(request, user=self.user)
+
+        view = HookList.as_view()
+        response = view(request)
+        response.render()
+
+        assert response.status_code == 200, f"Actual response: {response.status_code}"
+
+    def test_get_hook(self):
+        pass
+
+    def test_modify_hook(self):
+        pass
+
+    def test_delete_hook(self):
+        pass
+
