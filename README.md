@@ -1,6 +1,19 @@
 # Description
 A payment platform which would allow companies to process payments without direct interaction with banks.
 
+# Quick start
+To run the unit test:
+
+```python manage.py test bill_payer.tests.unit_test```
+
+To run locust (for benchmarking):
+
+On terminal 1: Run the server ```python manage.py runserver```
+
+On terminal 2, from bill_payer folder: ```locust```
+
+Go to ```http://0.0.0.0:8089 ``` to adjust the necessary setting
+
 # Main requirement
 :ballot_box_with_check: Payment must contain the following information: status (created, successful, failed, disputed), the time of the creation and the time of the transaction, the company that initiated the transaction
 
