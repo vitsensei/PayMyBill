@@ -1,13 +1,24 @@
+import logging
 from datetime import datetime, timedelta
 from pprint import pprint
 
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy
 from django.db.models.signals import *
 from django.dispatch import receiver
 import requests
+
+
+logger = logging.getLogger("bill_payer")
+logger.setLevel(logging.INFO)
+fh = logging.FileHandler('../bill_payer.log')
+fh.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s;%(levelname)s;%(message)s",
+                              "%Y-%m-%d %H:%M:%S")
+fh.setFormatter(formatter)
+logger.addHandler(fh)
 
 
 class CustomUserManager(BaseUserManager):
@@ -45,8 +56,8 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser):
     class Meta:
-        verbose_name = _("User")
-        verbose_name_plural = _("Users")
+        verbose_name = gettext_lazy("User")
+        verbose_name_plural = gettext_lazy("Users")
 
     email = models.EmailField(unique=True)
 
@@ -65,18 +76,16 @@ class CustomUser(AbstractBaseUser):
 
     def has_perm(self, perm, obj=None):
         # Not yet implemented
-        print(f"asking for perm: {perm}")
         return True
 
     def has_module_perms(self, package_name):
         # Not yet implemented
-        print(f"asking for module_perms: {package_name}")
         return True
 
 
 class Company(models.Model):
     class Meta:
-        verbose_name_plural = _("Companies")
+        verbose_name_plural = gettext_lazy("Companies")
 
     # The (custom) user model for auth
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="company")
@@ -146,10 +155,10 @@ class Hook(models.Model):
 
 
 def post_msg(msg, urls):
-    pprint(msg)
+    global logger
     for url in urls:
         # requests.post(url, data=msg)
-        print(f"Sending msg to {url}")
+        logger.info(f"Sending msg to {url}")
 
 
 @receiver(post_save, sender=Payment)
@@ -186,6 +195,9 @@ def hook_update_handler(sender, **kwargs):
             if current_state != instance.initial_state[field_name]:
                 new_state[field_name] = current_state
                 previous_state[field_name] = instance.initial_state[field_name]
+
+        if instance.initial_state["status"] == 1 and previous_state["status"] != 1:
+            instance.paid_date = datetime.now()
 
         if len(new_state) > 0:
             hook_message = {

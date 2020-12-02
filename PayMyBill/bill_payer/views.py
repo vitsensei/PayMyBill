@@ -95,17 +95,16 @@ class CompanyDetail(APIView):
 
     def get(self, request, format=None):
         if request.auth is None:
-            response = HttpResponse
-            response.status_code = 401
+            error = {"Unauthorised": "The request is not authorised"}
 
-            return response()
+            return Response(error, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
             try:
                 c = request.user.company
                 serializer = CompanySerializer(c)
 
-                return Response(serializer.data)
+                return Response(serializer.data, status=status.HTTP_200_OK)
 
             except Company.DoesNotExist:
                 error = {"Not found": {"The requested company is not found."}}
@@ -122,7 +121,7 @@ class PaymentList(APIView):
             payments = c.payment.all()
             serializer = PaymentSerializer(payments, many=True)
 
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Company.DoesNotExist:
             error = {"Not found": {"The requested company is not found."}}
@@ -147,7 +146,7 @@ class PaymentDetail(APIView):
             payment = c.payment.get(pk=pk)
             serializer = PaymentSerializer(payment)
 
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Company.DoesNotExist:
             error = {"Not found": {"The requested company is not found."}}
@@ -166,7 +165,7 @@ class PaymentDetail(APIView):
 
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Company.DoesNotExist:
             error = {"Not found": {"The requested company is not found."}}
@@ -203,13 +202,11 @@ class HookList(APIView):
             hooks = c.hook.all()
             serializer = HookSerializer(hooks, many=True)
 
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Company.DoesNotExist:
-            response = HttpResponse
-            response.status_code = 404
-
-            return response()
+            error = {"Not found": {"The requested company is not found."}}
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, format=None):
         serializer = HookSerializer(data=request.data, context={'request': request})
@@ -230,7 +227,7 @@ class HookDetail(APIView):
             hook = c.hook.get(pk=pk)
             serializer = HookSerializer(hook)
 
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Company.DoesNotExist:
             error = {"Not found": {"The requested company is not found."}}
@@ -249,7 +246,7 @@ class HookDetail(APIView):
 
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Company.DoesNotExist:
             error = {"Not found": {"The requested company is not found."}}

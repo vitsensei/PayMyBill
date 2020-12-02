@@ -3,8 +3,8 @@ from random import randint
 from rest_framework.test import APIRequestFactory, force_authenticate
 from django.test import TestCase
 
-from .models import *
-from .views import *
+from ..models import *
+from ..views import *
 
 
 list_of_company_name = [
@@ -48,6 +48,8 @@ class PaymentUnitTest(TestCase):
             "bsb": str(randint(100000, 999999)),
             "account_num": str(randint(100000, 999999)),
             "amount": str(randint(0, 10000)),
+            # "created_date": str(datetime.now()),
+            # "paid_date": str(datetime.now() + timedelta(days=36500)),
             "status": "0"
         }
 

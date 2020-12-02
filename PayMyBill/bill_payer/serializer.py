@@ -8,8 +8,7 @@ from .models import Company, Payment, Hook
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ["name", "bsb", "account_num", "amount",
-                  "created_date", "paid_date", "status"]
+        fields = ["name", "bsb", "account_num", "amount", "status"]
 
     def create(self, validated_data):
         data = deepcopy(validated_data)  # deepcopy just in case
@@ -28,7 +27,6 @@ class PaymentSerializer(serializers.ModelSerializer):
         instance.bsb = validated_data.get("bsb", instance.bsb)
         instance.account_num = validated_data.get("account_num", instance.account_num)
         instance.amount = validated_data.get("amount", instance.amount)
-        instance.paid_date = validated_data.get("paid_date", instance.paid_date)
         instance.status = validated_data.get("status", instance.status)
 
         instance.save()
@@ -44,9 +42,7 @@ class CompanySerializer(serializers.ModelSerializer):
 class HookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hook
-        fields = ["url", "is_subscribed_name", "is_subscribed_bsb",
-                  "is_subscribed_account_num", "is_subscribed_amount",
-                  "is_subscribed_status"]
+        fields = ["url"]
 
     def create(self, validated_data):
         data = deepcopy(validated_data)  # deepcopy just in case
