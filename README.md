@@ -21,6 +21,10 @@ A payment platform which would allow companies to process payments without direc
 
 :black_square_button: Scale: one single company could potentially send a lot of requests and block everyone else, we would like the system to be able to handle and avoid it   
 
+:black_square_button: Decode the BSB to find out which banking API to use
+
+:black_square_button: Check for valid POST request
+
 # Benchmarking
 The following setup is used for benchmarking (using locust)
 - 1000 user running concurrently
